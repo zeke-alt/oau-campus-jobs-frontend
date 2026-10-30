@@ -36,7 +36,8 @@ export function JobDetail({
             Select a job to view details
           </p>
           <p className="mt-1 text-xs text-[var(--color-muted)] max-w-xs leading-relaxed">
-            Choose an opportunity from the list on the left to read full responsibilities and submit your application.
+            Choose an opportunity from the list on the left to read full
+            responsibilities and submit your application.
           </p>
         </div>
       </div>
@@ -51,12 +52,11 @@ export function JobDetail({
   const closed = job.status === "CLOSED";
 
   return (
-    <div className="flex h-full flex-col justify-between">
-      {/* Scrollable Center-Fitted Content */}
-      <div className="flex-1 overflow-y-auto px-5 py-6 sm:px-8 sm:py-8">
-        <div className="mx-auto max-w-xl space-y-6">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden px-5 py-5 sm:px-6 sm:py-5">
+        <div className="detail-preview-scrollbar min-h-0 flex-1 space-y-5 overflow-y-auto pr-2">
           {/* Header Row: Single Status Indicator & Metadata */}
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="flex items-center justify-between gap-2">
               {closed ? (
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-1 text-xs font-medium text-[var(--color-muted)]">
@@ -73,26 +73,37 @@ export function JobDetail({
               {job.deadline && (
                 <span className="inline-flex items-center gap-1 text-[11px] text-[var(--color-muted)]">
                   <Clock size={12} className="text-[var(--color-subtle)]" />
-                  Deadline: {new Date(job.deadline).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                  Deadline:{" "}
+                  {new Date(job.deadline).toLocaleDateString("en-GB", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
                 </span>
               )}
             </div>
 
             {/* Title & Employer */}
             <div>
-              <h2 className="text-2xl font-bold tracking-tight text-[var(--color-ink)] leading-snug">
+              <h2 className="line-clamp-2 text-2xl font-bold text-[var(--color-ink)] leading-snug">
                 {job.title}
               </h2>
               <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-[var(--color-muted)]">
                 <span className="flex items-center gap-1.5 font-medium text-[var(--color-ink)]">
-                  <Building2 size={14} className="text-[var(--color-accent)] shrink-0" />
+                  <Building2
+                    size={14}
+                    className="text-[var(--color-accent)] shrink-0"
+                  />
                   {emp}
                 </span>
                 {job.location && (
                   <>
                     <span>•</span>
                     <span className="flex items-center gap-1">
-                      <MapPin size={13} className="text-[var(--color-subtle)] shrink-0" />
+                      <MapPin
+                        size={13}
+                        className="text-[var(--color-subtle)] shrink-0"
+                      />
                       {job.location}
                     </span>
                   </>
@@ -102,23 +113,23 @@ export function JobDetail({
           </div>
 
           {/* Key Info Chips */}
-          <div className="flex flex-wrap items-center gap-2 pt-1">
+          <div className="flex shrink-0 flex-wrap items-center gap-1.5">
             {job.category && (
-              <span className="inline-flex items-center gap-1 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-1.5 text-xs font-medium text-[var(--color-ink)]">
+              <span className="inline-flex items-center gap-1 rounded-[4px] border border-[var(--color-border)] bg-[var(--color-surface-2)] px-2 py-1 text-[11px] font-medium text-[var(--color-ink)]">
                 <Tag size={12} className="text-[var(--color-subtle)]" />
                 {job.category}
               </span>
             )}
 
             {job.employmentType && (
-              <span className="inline-flex items-center gap-1 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-1.5 text-xs font-medium text-[var(--color-ink)]">
+              <span className="inline-flex items-center gap-1 rounded-[4px] border border-[var(--color-border)] bg-[var(--color-surface-2)] px-2 py-1 text-[11px] font-medium text-[var(--color-ink)]">
                 <Briefcase size={12} className="text-[var(--color-subtle)]" />
                 {job.employmentType.replace("_", " ")}
               </span>
             )}
 
             {job.compensation && (
-              <span className="inline-flex items-center gap-1 rounded-xl border border-amber-200/80 bg-amber-50/70 px-3 py-1.5 text-xs font-semibold text-amber-900">
+              <span className="inline-flex items-center gap-1 rounded-[4px] border border-amber-200 bg-amber-50 px-2 py-1 text-[11px] font-semibold text-amber-900">
                 <Banknote size={13} className="text-amber-700" />
                 {job.compensation}
               </span>
@@ -126,17 +137,17 @@ export function JobDetail({
           </div>
 
           {/* Job Description Card */}
-          <div className="space-y-2 pt-2">
+          <div className="min-h-0">
             <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--color-subtle)]">
               Role Description &amp; Details
             </h3>
-            <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-2)]/40 p-4 sm:p-5 text-sm text-[var(--color-ink)] leading-relaxed whitespace-pre-wrap">
-              {job.description}
+            <div className="rounded-[4px] border border-[var(--color-border)] bg-[var(--color-surface-2)] p-4 text-sm text-[var(--color-ink)] leading-relaxed whitespace-pre-wrap">
+              {job.description || "No description provided."}
             </div>
           </div>
 
           {/* Posted By Information */}
-          <div className="rounded-xl border border-[var(--color-border)]/50 bg-[var(--color-surface)] p-3 text-xs text-[var(--color-muted)] flex items-center justify-between">
+          <div className="hidden border-t border-[var(--color-border)] pt-2 text-[11px] text-[var(--color-muted)] sm:flex sm:items-center sm:justify-between">
             <span className="flex items-center gap-2">
               <Briefcase size={14} className="text-[var(--color-accent)]" />
               Verified Obafemi Awolowo University Campus Listing
@@ -147,10 +158,10 @@ export function JobDetail({
       </div>
 
       {/* Centered Fitted Bottom Action Bar */}
-      <div className="sticky bottom-0 border-t border-[var(--color-border)] bg-[var(--color-surface)]/95 px-5 py-4 backdrop-blur-sm sm:px-8">
-        <div className="mx-auto flex max-w-xl items-center gap-3">
+      <div className="shrink-0 border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3">
+        <div className="flex items-center gap-2">
           {applied ? (
-            <div className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50/90 py-2.5 text-xs font-semibold text-emerald-800">
+            <div className="flex flex-1 items-center justify-center gap-2 rounded-[4px] border border-emerald-200 bg-emerald-50/90 py-2.5 text-xs font-semibold text-emerald-800">
               <CheckCircle2 size={16} />
               <span>Application Submitted</span>
             </div>
@@ -159,7 +170,7 @@ export function JobDetail({
               type="button"
               onClick={onApply}
               disabled={disabled || closed}
-              className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--color-apply)] py-2.5 text-xs sm:text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[var(--color-apply-hover)] active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none"
+              className="flex-1 inline-flex items-center justify-center gap-2 rounded-[4px] bg-[var(--color-apply)] py-2.5 text-xs sm:text-sm font-semibold text-white transition-colors duration-150 hover:bg-[var(--color-apply-hover)] disabled:opacity-50 disabled:pointer-events-none"
             >
               {closed ? "Applications Closed" : "Apply now"}
             </button>
@@ -169,7 +180,7 @@ export function JobDetail({
             type="button"
             onClick={onSave}
             title={saved ? "Remove from saved" : "Save job"}
-            className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-4 py-2.5 text-xs sm:text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface-2)] transition-colors"
+            className="inline-flex items-center justify-center gap-1.5 rounded-[4px] border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 py-2.5 text-xs sm:text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface-2)] transition-colors"
           >
             <Bookmark
               size={15}
@@ -186,7 +197,7 @@ export function JobDetail({
             type="button"
             onClick={onReport}
             title="Report this job posting"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--color-border)] text-[var(--color-muted)] hover:border-red-200 hover:bg-red-50 hover:text-red-600 transition-colors"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] border border-[var(--color-border)] text-[var(--color-muted)] hover:border-red-200 hover:bg-red-50 hover:text-red-600 transition-colors"
           >
             <Flag size={15} />
           </button>

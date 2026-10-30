@@ -27,11 +27,13 @@ export function JobCard({
   const remaining = daysUntil(job.deadline);
   return (
     <article
-      className={`w-full rounded-[var(--radius-lg)] border p-3 transition-colors ${
-        selected
-          ? "border-[var(--color-accent)] bg-[var(--color-accent-glow)]"
-          : "border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-2)]"
-      }`}
+      className={`w-full transition-colors
+        px-4 py-3 lg:rounded-[var(--radius-lg)] lg:border lg:p-3
+        ${
+          selected
+            ? "bg-[var(--color-accent-glow)] lg:border-[var(--color-accent)]"
+            : "bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)] lg:border-[var(--color-border)] lg:hover:border-[var(--color-border-strong)]"
+        }`}
     >
       <div className="flex items-start gap-2">
         <button

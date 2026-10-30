@@ -22,7 +22,15 @@ import { SkeletonCard } from "@/components/states/LoadingState";
 import { EmptyState } from "@/components/states/EmptyState";
 import { ErrorState } from "@/components/states/ErrorState";
 import { ApiError } from "@/lib/api";
-import { Briefcase, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Briefcase,
+  Loader2,
+  ChevronLeft,
+  ChevronRight,
+  Bookmark,
+  Flag,
+  CheckCircle2,
+} from "lucide-react";
 
 const PAGE_SIZE = 10;
 
@@ -53,6 +61,7 @@ export default function StudentJobsPage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [toast, setToast] = useState("");
   const [isDesktop, setIsDesktop] = useState(false);
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
 
   const reqId = useRef(0);
   const toastTimer = useRef(null);
@@ -252,7 +261,7 @@ export default function StudentJobsPage() {
   // Render
   // --------------------------------------------------------------------------
   return (
-    <div className="flex h-full min-h-0 flex-col gap-3 overflow-hidden">
+    <div className="flex h-full min-h-0 flex-col gap-2 overflow-hidden lg:gap-3">
       {/* Header */}
       <div className="flex items-center justify-between gap-4 border-b-2 border-[var(--color-ink)] pb-2">
         <h1 className="text-xl font-extrabold leading-none text-[var(--color-ink)] sm:text-2xl">
@@ -276,6 +285,9 @@ export default function StudentJobsPage() {
         categories={categories}
         locations={locations}
         onClear={clearFilters}
+        drawerOpen={filterDrawerOpen}
+        onOpenDrawer={() => setFilterDrawerOpen(true)}
+        onCloseDrawer={() => setFilterDrawerOpen(false)}
       />
 
       {wake && (
@@ -324,7 +336,9 @@ export default function StudentJobsPage() {
             >
               <div
                 ref={listRef}
-                className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto pr-1.5 pb-3 custom-scrollbar"
+                className="flex min-h-0 flex-1 flex-col overflow-y-auto custom-scrollbar
+                  divide-y divide-[var(--color-border)] lg:divide-y-0
+                  lg:gap-2.5 lg:pr-1.5 lg:pb-3"
               >
                 {jobs.map((job) => (
                   <JobCard
@@ -338,11 +352,34 @@ export default function StudentJobsPage() {
                   />
                 ))}
               </div>
-              <div className="flex shrink-0 items-center justify-between gap-3 border-t border-[var(--color-border)] pt-2">
+            </section>
+
+            {/* Right detail panel */}
+            <div className="hidden min-h-0 overflow-hidden rounded-[4px] border border-[var(--color-border)] bg-[var(--color-surface)] lg:flex lg:flex-col">
+              <JobDetail
+                job={selected}
+                compact
+                hideActions
+                saved={selected ? savedIds.has(selected.id) : false}
+                applied={selected ? appliedIds.has(selected.id) : false}
+                disabled={actionLoading}
+              />
+            </div>
+          </div>
+
+          {/* ================================================================
+              UNIFIED BOTTOM BAR
+              Aligns visually with the sidebar's account block footer.
+              Left: pagination | Right: Apply now / Save / Report
+              ================================================================ */}
+          <div className="shrink-0 border-t-2 border-[var(--color-ink)] bg-[var(--color-surface)] ">
+            <div className="flex items-center lg:justify-between gap-3 lg:pt-6">
+              {/* Pagination */}
+              <div className="flex items-center justify-between gap-3">
                 <span className="text-[11px] font-semibold text-[var(--color-muted)]">
                   Page {pagination.page} of {pagination.totalPages}
                 </span>
-                <div className="flex gap-2">
+                <div className="flex gap-1.5">
                   <button
                     type="button"
                     disabled={pagination.page <= 1}
@@ -363,20 +400,61 @@ export default function StudentJobsPage() {
                   </button>
                 </div>
               </div>
-            </section>
 
-            {/* Right detail panel */}
-            <div className="hidden min-h-0 overflow-hidden rounded-[4px] border border-[var(--color-border)] bg-[var(--color-surface)] lg:flex lg:flex-col">
-              <JobDetail
-                job={selected}
-                compact
-                onApply={() => setApplyOpen(true)}
-                onSave={() => selected && toggleSave(selected)}
-                onReport={() => setReportOpen(true)}
-                saved={selected ? savedIds.has(selected.id) : false}
-                applied={selected ? appliedIds.has(selected.id) : false}
-                disabled={actionLoading}
-              />
+              {/* Apply / Save / Report — shown only on desktop when a job is selected */}
+              {selected && isDesktop && (
+                <div className="flex items-center gap-2">
+                  {selected && appliedIds.has(selected.id) ? (
+                    <div className="flex items-center gap-2 rounded-[4px] border border-emerald-200 bg-emerald-50/90 px-3 py-2 text-xs font-semibold text-emerald-800">
+                      <CheckCircle2 size={14} />
+                      <span>Applied</span>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setApplyOpen(true)}
+                      disabled={
+                        actionLoading || selected?.status === "CLOSED"
+                      }
+                      className="inline-flex h-9 items-center justify-center gap-2 rounded-[4px] bg-[var(--color-apply)] px-5 text-sm font-semibold text-white transition-colors duration-150 hover:bg-[var(--color-apply-hover)] disabled:opacity-50 disabled:pointer-events-none"
+                    >
+                      {selected?.status === "CLOSED"
+                        ? "Applications Closed"
+                        : "Apply now"}
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => selected && toggleSave(selected)}
+                    title={
+                      savedIds.has(selected.id)
+                        ? "Remove from saved"
+                        : "Save job"
+                    }
+                    className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[4px] border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 text-xs font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface-2)] transition-colors"
+                  >
+                    <Bookmark
+                      size={14}
+                      className={
+                        savedIds.has(selected.id)
+                          ? "fill-[var(--color-accent)] text-[var(--color-accent)]"
+                          : "text-[var(--color-muted)]"
+                      }
+                    />
+                    <span>{savedIds.has(selected.id) ? "Saved" : "Save"}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setReportOpen(true)}
+                    title="Report this job posting"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] border border-[var(--color-border)] text-[var(--color-muted)] hover:border-red-200 hover:bg-red-50 hover:text-red-600 transition-colors"
+                  >
+                    <Flag size={14} />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </>

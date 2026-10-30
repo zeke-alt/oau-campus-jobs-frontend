@@ -20,7 +20,7 @@
   /* Brand / Accent */
   --color-brand: #1f4d3a;
   --color-brand-2: #173d2d;
-  --color-accent: #1f4d3a;
+  --color-accent: #2f7a56;
   --color-accent-2: #173d2d;
   --color-accent-foreground: #ffffff;
   --color-accent-glow: rgba(31, 77, 58, 0.08);
@@ -59,44 +59,43 @@
   color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
+html.dark,
+:root.dark {
+  color-scheme: dark;
 
-    /* Surfaces */
-    --color-background: #0d110f;
-    --color-surface: #151917;
-    --color-surface-2: #1c211e;
-    --color-surface-3: #252c28;
+  /* Surfaces */
+  --color-background: #0d110f;
+  --color-surface: #151917;
+  --color-surface-2: #1c211e;
+  --color-surface-3: #252c28;
 
-    /* Ink */
-    --color-ink: #f0f4f2;
-    --color-ink-2: #d4dad6;
-    --color-muted: #95a09a;
-    --color-subtle: #6e7973;
+  /* Ink */
+  --color-ink: #f0f4f2;
+  --color-ink-2: #d4dad6;
+  --color-muted: #95a09a;
+  --color-subtle: #6e7973;
 
-    /* Borders */
-    --color-border: #262e29;
-    --color-border-strong: #38433d;
+  /* Borders */
+  --color-border: #262e29;
+  --color-border-strong: #38433d;
 
-    /* Brand / Accent */
-    --color-brand: #2f7a56;
-    --color-brand-2: #246345;
-    --color-accent: #2f7a56;
-    --color-accent-2: #246345;
-    --color-accent-foreground: #ffffff;
-    --color-accent-glow: rgba(47, 122, 86, 0.16);
+  /* Brand / Accent */
+  --color-brand: #2f7a56;
+  --color-brand-2: #246345;
+  --color-accent: #2f7a56;
+  --color-accent-2: #246345;
+  --color-accent-foreground: #ffffff;
+  --color-accent-glow: rgba(47, 122, 86, 0.16);
 
-    /* Semantic */
-    --color-apply: #2f7a56;
-    --color-apply-hover: #388d64;
-    --color-apply-glow: rgba(47, 122, 86, 0.22);
-    --color-danger: #f87171;
-    --color-danger-foreground: #ffffff;
-    --color-success: #2f7a56;
-    --color-success-bg: rgba(47, 122, 86, 0.2);
-    --color-warning: #fbbf24;
-  }
+  /* Semantic */
+  --color-apply: #2f7a56;
+  --color-apply-hover: #388d64;
+  --color-apply-glow: rgba(47, 122, 86, 0.22);
+  --color-danger: #f87171;
+  --color-danger-foreground: #ffffff;
+  --color-success: #2f7a56;
+  --color-success-bg: rgba(47, 122, 86, 0.2);
+  --color-warning: #fbbf24;
 }
 
 html {
@@ -273,4 +272,10 @@ body {
   display: none;
   width: 0;
   height: 0;
+}
+
+[data-ui-button]:not([data-variant="danger"]):not(:disabled):hover {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-accent-foreground);
 }

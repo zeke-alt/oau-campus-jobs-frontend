@@ -6,7 +6,6 @@
 import Link from "next/link";
 import { Briefcase, Menu, X, PanelLeft } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
 import { useSidebar } from "@/context/SidebarContext";
 import { useState } from "react";
@@ -52,7 +51,7 @@ export function Navbar() {
         </div>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-2 md:flex">
+        <nav className="hidden items-center gap-1 md:flex">
           {!isAuthenticated && (
             <>
               <Button variant="ghost" size="sm" asChild>
@@ -73,20 +72,16 @@ export function Navbar() {
               </Button>
             </>
           )}
-          <ThemeToggle />
         </nav>
 
-        {/* Mobile controls */}
-        <div className="flex items-center gap-2 md:hidden">
-          <ThemeToggle />
-          <button
-            className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[var(--color-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-ink)] transition-colors duration-150"
-            onClick={() => setOpen(!open)}
-            aria-label={open ? "Close menu" : "Open menu"}
-          >
-            {open ? <X size={17} /> : <Menu size={17} />}
-          </button>
-        </div>
+        {/* Mobile menu trigger */}
+        <button
+          className="md:hidden flex h-8 w-8 items-center justify-center rounded-[4px] text-[var(--color-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-ink)] transition-colors duration-150"
+          onClick={() => setOpen(!open)}
+          aria-label={open ? "Close menu" : "Open menu"}
+        >
+          {open ? <X size={17} /> : <Menu size={17} />}
+        </button>
       </div>
 
       {/* Mobile dropdown */}

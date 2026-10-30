@@ -1,19 +1,54 @@
 "use client";
 // ============================================================================
-// SECTION: THEME CONTEXT (Light / Dark / System)
+// SECTION: HYBRID THEME ENGINE (OS Default + Manual Override + LocalStorage)
 // ============================================================================
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useSyncExternalStore,
+} from "react";
 
-const THEME_STORAGE_KEY = "oau_campus_jobs_theme";
+const STORAGE_KEY = "oau_campus_jobs_theme";
 
-function getStoredTheme() {
+function getInitialTheme() {
   if (typeof window === "undefined") return "system";
   try {
-    const stored = localStorage.getItem(THEME_STORAGE_KEY);
-    return stored === "dark" || stored === "light" || stored === "system" ? stored : "system";
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved === "dark" || saved === "light" || saved === "system"
+      ? saved
+      : "system";
   } catch {
     return "system";
   }
+}
+
+// Media query external store
+function subscribeToSystemTheme(callback) {
+  if (typeof window === "undefined") return () => {};
+  const media = window.matchMedia("(prefers-color-scheme: dark)");
+  media.addEventListener("change", callback);
+  return () => media.removeEventListener("change", callback);
+}
+
+function getSystemThemeSnapshot() {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+
+function getSystemThemeServerSnapshot() {
+  return false;
+}
+
+// Mounted external store (avoids setState in effect)
+const emptySubscribe = () => () => {};
+function getMountedSnapshot() {
+  return true;
+}
+function getMountedServerSnapshot() {
+  return false;
 }
 
 const ThemeContext = createContext({
@@ -25,62 +60,58 @@ const ThemeContext = createContext({
 });
 
 export function ThemeProvider({ children }) {
-  const [theme, setThemeState] = useState(getStoredTheme);
-  const [resolvedTheme, setResolvedTheme] = useState("light");
-  const [mounted, setMounted] = useState(false);
+  const [theme, setThemeState] = useState(getInitialTheme);
+  const systemIsDark = useSyncExternalStore(
+    subscribeToSystemTheme,
+    getSystemThemeSnapshot,
+    getSystemThemeServerSnapshot
+  );
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    getMountedSnapshot,
+    getMountedServerSnapshot
+  );
 
-  // Sync state with DOM and media query
-  const applyTheme = useCallback((targetTheme) => {
+  // Determine active theme (manual override takes precedence over OS default)
+  const resolvedTheme =
+    theme === "system" ? (systemIsDark ? "dark" : "light") : theme;
+
+  // Apply classes to documentElement
+  const applyClasses = useCallback((active) => {
     if (typeof document === "undefined") return;
     const root = document.documentElement;
-    let isDark = false;
-
-    if (targetTheme === "dark") {
-      isDark = true;
-    } else if (targetTheme === "light") {
-      isDark = false;
-    } else {
-      isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    }
-
-    if (isDark) {
+    if (active === "dark") {
       root.classList.add("dark");
-    } else {
+      root.classList.remove("light");
+    } else if (active === "light") {
+      root.classList.add("light");
       root.classList.remove("dark");
+    } else {
+      // system: remove manual override classes, letting CSS media query take over
+      root.classList.remove("dark", "light");
     }
-
-    setResolvedTheme(isDark ? "dark" : "light");
   }, []);
 
-  // Sync DOM on mount
+  // Sync classes whenever theme changes
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    applyTheme(theme);
-    setMounted(true);
-  }, [applyTheme, theme]);
-
-  // Listen to OS color scheme changes when theme is "system"
-  useEffect(() => {
-    if (!mounted || theme !== "system") return;
-
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = () => applyTheme("system");
-
-    media.addEventListener("change", handler);
-    return () => media.removeEventListener("change", handler);
-  }, [mounted, theme, applyTheme]);
+    applyClasses(theme);
+  }, [theme, applyClasses]);
 
   const setTheme = useCallback(
     (newTheme) => {
       setThemeState(newTheme);
       try {
-        localStorage.setItem(THEME_STORAGE_KEY, newTheme);
+        if (newTheme === "system") {
+          localStorage.removeItem(STORAGE_KEY);
+        } else {
+          localStorage.setItem(STORAGE_KEY, newTheme);
+        }
       } catch {
         // Storage restricted
       }
-      applyTheme(newTheme);
+      applyClasses(newTheme);
     },
-    [applyTheme]
+    [applyClasses]
   );
 
   const toggleTheme = useCallback(() => {
@@ -89,7 +120,9 @@ export function ThemeProvider({ children }) {
   }, [resolvedTheme, setTheme]);
 
   return (
-    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme, toggleTheme, mounted }}>
+    <ThemeContext.Provider
+      value={{ theme, resolvedTheme, setTheme, toggleTheme, mounted }}
+    >
       {children}
     </ThemeContext.Provider>
   );

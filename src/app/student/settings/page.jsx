@@ -9,7 +9,6 @@ import { useAuth } from "@/context/AuthContext";
 import { getInitials } from "@/lib/profileCompleteness";
 import { SettingsSection } from "./SettingsSection";
 import { SettingsRow, SettingsLinkRow } from "./SettingsRow";
-import { ThemeSegmentedPicker } from "@/components/ui/ThemeToggle";
 
 // ============================================================================
 // SECTION: HELPERS
@@ -103,15 +102,6 @@ export default function StudentSettingsPage() {
           icon={Bookmark}
           label="Saved jobs"
           description="Jobs you bookmarked for later"
-        />
-      </SettingsSection>
-
-      {/* Appearance */}
-      <SettingsSection title="Appearance" description="Choose how OAU Campus Jobs looks on your device.">
-        <SettingsRow
-          label="Theme"
-          description="Switch between light, dark, or system preference."
-          action={<ThemeSegmentedPicker />}
         />
       </SettingsSection>
 

@@ -27,7 +27,6 @@ import {
 } from "lucide-react";
 import { useSidebar } from "@/context/SidebarContext";
 import { useAuth } from "@/context/AuthContext";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const guestNav = [
   { href: "/", label: "Browse Jobs", icon: Briefcase },
@@ -151,17 +150,14 @@ export function Sidebar({ role }) {
         </Link>
 
         {!collapsed && (
-          <div className="flex items-center gap-1">
-            <ThemeToggle />
-            <button
-              type="button"
-              onClick={toggleSidebar}
-              aria-label="Collapse sidebar"
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--color-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-ink)] transition-colors duration-150"
-            >
-              <PanelLeftClose size={17} aria-hidden="true" />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={toggleSidebar}
+            aria-label="Collapse sidebar"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--color-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-ink)] transition-colors duration-150"
+          >
+            <PanelLeftClose size={17} aria-hidden="true" />
+          </button>
         )}
       </div>
 
@@ -213,7 +209,6 @@ export function Sidebar({ role }) {
       <div className="p-2.5 border-t-2 border-[var(--color-ink)] space-y-1.5">
         {collapsed ? (
           <>
-            <ThemeToggle className="w-full h-9 mb-1" />
             {isAuthenticated && user && (
               <button
                 type="button"
